@@ -75,21 +75,29 @@ void setup() {
   for (int i = 6; i <= 13; i++) {
     pinMode(i, INPUT_PULLUP);
   }
+  lcd.setCursor(0, 0);
+  lcd.print("Selecione uma opcao:");
+  lcd.setCursor(0, 1);
+  lcd.print("1 - Estatisticas");
+  lcd.setCursor(0, 2);
+  lcd.print("2 - Marcador");
+  lcd.setCursor(0, 3);
+  lcd.print("3 - Relogio");
 }
 
 void loop() {
   // ---------- 1) Checar tecla -----------
   char tecla = teclado.getKey();
   if (tecla =='1') {
+    // bip curto no buzzer ao apertar
+    digitalWrite(buzzer, HIGH);
+    delay(120);
+    digitalWrite(buzzer, LOW);
     // Mostrar tecla no LCD e Serial
     lcd.clear();
     lcd.setCursor(0,0);
     lcd.print("MENU DE ESTATISTICAS");
 
-    // bip curto no buzzer ao apertar
-    digitalWrite(buzzer, HIGH);
-    delay(120);
-    digitalWrite(buzzer, LOW);
 
     delay(200); // anti-bounce simples
 
@@ -143,7 +151,7 @@ void loop() {
     lcd.setCursor(0,3);
     lcd.print("Luz:");
     lcd.print(lumPercent);
-    lcd.print("%   ");
+    lcd.print("%   4-Voltar");
 
     // lógica de leds e buzzer (mesma que você queria, porém sem bloquear longos delays)
     if (isnan(humi) || isnan(tempC)) {
@@ -178,9 +186,118 @@ void loop() {
 
   }
   else if(tecla == '2'){
+    // Bip curto no buzzer
+    digitalWrite(buzzer, HIGH);
+    delay(120);
+    digitalWrite(buzzer, LOW);
+    delay(200);
     lcd.clear();
     lcd.setCursor(0,0);
-    lcd.print("marcar");
-  }
+    lcd.print("Clique 2 para marcar");
+      lcd.setCursor(0, 1);
+      lcd.print("Marcador ativado");
+      lcd.setCursor(0, 3);
+      lcd.print("4 - Voltar");
 
-}   
+
+      // === Leitura dos sensores ===
+      float humi  = dht22.readHumidity();
+      float tempC = dht22.readTemperature();
+      int ldrValue = analogRead(ldrPin);
+      int lumPercent = map(ldrValue, 0, 1023, 100, 0);
+      lumPercent = constrain(lumPercent, 0, 100);
+
+      // === Leitura do RTC (data e hora ajustada) ===
+      DateTime now = RTC.now();
+      uint32_t timestamp = now.unixtime() + (UTC_OFFSET * 3600);
+      DateTime adjustedTime = DateTime(timestamp);
+
+      // === Envio para o Serial Monitor ===
+      Serial.println("=== MARCADOR SALVO ===");
+      Serial.print("Data: ");
+      if (adjustedTime.day() < 10) Serial.print('0');
+      Serial.print(adjustedTime.day());
+      Serial.print('/');
+      if (adjustedTime.month() < 10) Serial.print('0');
+      Serial.print(adjustedTime.month());
+      Serial.print('/');
+      Serial.println(adjustedTime.year());
+
+      Serial.print("Hora: ");
+      if (adjustedTime.hour() < 10) Serial.print('0');
+      Serial.print(adjustedTime.hour());
+      Serial.print(':');
+      if (adjustedTime.minute() < 10) Serial.print('0');
+      Serial.print(adjustedTime.minute());
+      Serial.print(':');
+      if (adjustedTime.second() < 10) Serial.print('0');
+      Serial.println(adjustedTime.second());
+
+      if (isnan(humi) || isnan(tempC)) {
+        Serial.println("Erro na leitura do DHT22");
+      } else {
+        Serial.print("Temperatura: ");
+        Serial.print(tempC, 1);
+        Serial.println(" °C");
+
+        Serial.print("Umidade: ");
+        Serial.print(humi, 0);
+        Serial.println(" %");
+      }
+
+      Serial.print("Luminosidade: ");
+      Serial.print(lumPercent);
+      Serial.println(" %");
+      Serial.println("========================");
+      
+      // Feedback no LCD
+      lcd.setCursor(0, 2);
+      lcd.print("Dados enviados!");
+      delay(1000);
+  }
+  else if (tecla == '3') {
+  // Bip curto no buzzer
+  digitalWrite(buzzer, HIGH);
+  delay(120);
+  digitalWrite(buzzer, LOW);
+  delay(200);
+
+  lcd.clear();
+  lcd.setCursor(0, 0);
+  lcd.print("RELOGIO ATUAL");
+  lcd.setCursor(0, 3);
+  lcd.print("4 - Voltar");
+
+  // Lê o horário atual do RTC
+  DateTime now = RTC.now();
+  uint32_t timestamp = now.unixtime() + (UTC_OFFSET * 3600);
+  DateTime adjustedTime = DateTime(timestamp);
+
+  // Exibe a data no LCD
+  lcd.setCursor(0, 1);
+  lcd.print("Data: ");
+  if (adjustedTime.day() < 10) lcd.print('0');
+  lcd.print(adjustedTime.day());
+  lcd.print('/');
+  if (adjustedTime.month() < 10) lcd.print('0');
+  lcd.print(adjustedTime.month());
+  lcd.print('/');
+  lcd.print(adjustedTime.year());
+
+  // Exibe a hora no LCD
+  lcd.setCursor(0, 2);
+  lcd.print("Hora: ");
+  if (adjustedTime.hour() < 10) lcd.print('0');
+  lcd.print(adjustedTime.hour());
+  lcd.print(':');
+  if (adjustedTime.minute() < 10) lcd.print('0');
+  lcd.print(adjustedTime.minute());
+  lcd.print(':');
+  if (adjustedTime.second() < 10) lcd.print('0');
+  lcd.print(adjustedTime.second());
+
+  delay(500);
+  
+}
+  
+}
