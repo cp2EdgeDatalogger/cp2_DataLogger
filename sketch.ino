@@ -9,7 +9,7 @@
 #define UTC_OFFSET -3
 
 #define DHT22_PIN 2
-#define DHTTYPE DHT22  // corrigido, pois você usa DHT22
+#define DHTTYPE DHT22 
 
 const int ledG = 3;
 const int ledY = 4;
