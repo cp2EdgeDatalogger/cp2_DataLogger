@@ -19,12 +19,12 @@ const int ldrPin = A0;
 
 // variáveis globais de média
 int nloops = 0;
-float somaLdr = 0;
-float somaTemp = 0;
-float somaHumi = 0;
-float mediaLdr = 0;
-float mediaTemp = 0;
-float mediaHumi = 0;
+int somaLdr = 0;
+int somaTemp = 0;
+int somaHumi = 0;
+int mediaLdr = 0;
+int mediaTemp = 0;
+int mediaHumi = 0;
 
 //usando esquema de flags pra
 // flags
@@ -101,17 +101,20 @@ void setup() {
 
 void loop() {
   // --- Leitura dos sensores ---
-  float humi  = dht22.readHumidity();
-  float tempC = dht22.readTemperature();
+  int humi  = (dht22.readHumidity()) * 10;
+  int tempC = ( dht22.readTemperature()) * 10;
   int ldrValue = analogRead(ldrPin);
-  int lumPercent = map(ldrValue, 0, 1023, 100, 0);
+  
+  // o tipo byte consome 1 byte(de 0 a 255), int consome 2 bytes (de 0 a 1023)
+  byte lumPercent = map(ldrValue, 0, 1023, 100, 0);
+  // faz o mesmo trampo de map, mas tem um "pouco" mais de seguranca contra ruido analogico
   lumPercent = constrain(lumPercent, 0, 100);
 
   // --- Atualização das somas e cálculo das médias ---
   
     somaLdr += lumPercent;
-    somaTemp += tempC;
-    somaHumi += humi;
+    somaTemp += tempC / 10;
+    somaHumi += humi / 10;
     nloops++;
 
     mediaLdr = somaLdr / nloops;
@@ -164,11 +167,10 @@ void loop() {
       lcd.setCursor(0,1);
       
         lcd.print(F("T:"));
-        lcd.print(tempC, 1);
+        lcd.print(tempC / 10.0, 1);
         lcd.print(F("C U:"));
-        lcd.print(humi, 0);
-        lcd.print(F("% "));
-      
+        lcd.print(humi / 10.0, 0);
+        lcd.print(F("% ")); 
 
       lcd.setCursor(0,2);
       lcd.print(F("L:"));
@@ -178,11 +180,11 @@ void loop() {
       lcd.print(F("4-Voltar"));
 
       // --- Análise de faixas e alertas ---
-      
-        flagTempAlta = (tempC >= 30);
-        flagTempBaixa = (tempC <= 0);
-        flagUmidAlta = (humi >= 90);
-        flagUmidBaixa = (humi <= 20);
+
+        flagTempAlta = ((tempC / 10) >= 30);
+        flagTempBaixa = ((tempC / 10) <= 0);
+        flagUmidAlta = ((humi / 10) >= 90);
+        flagUmidBaixa = ((humi / 10) <= 20);
         flagLumAlta = (lumPercent >= 90);
 
         if (flagTempAlta || flagTempBaixa || flagUmidAlta || flagUmidBaixa || flagLumAlta) {
@@ -199,13 +201,13 @@ void loop() {
           delay(100);
           digitalWrite(ledR, LOW);
         }
-        else if (humi < 60 || humi > 80 || lumPercent > 60 || tempC > 20 || tempC < 10) {
+        else if ((humi / 10) < 60 || (humi / 10) > 80 || lumPercent > 60 || (tempC / 10) > 20 || (tempC / 10) < 10) {
           Serial.print(F("Warning: "));
-          if (humi < 60) Serial.print(F("Umidade um pouco baixa! "));
-          if (humi > 80) Serial.print(F("Umidade um pouco alta! "));
+          if ((humi / 10) < 60) Serial.print(F("Umidade um pouco baixa! "));
+          if ((humi / 10) > 80) Serial.print(F("Umidade um pouco alta! "));
           if (lumPercent > 60) Serial.print(F("Luminosidade acima do toleravel! "));
-          if (tempC > 20) Serial.print(F("Temperatura acima do ideal! "));
-          if (tempC < 10) Serial.print(F("Temperatura abaixo do ideal! "));
+          if ((tempC / 10) > 20) Serial.print(F("Temperatura acima do ideal! "));
+          if ((tempC / 10) < 10) Serial.print(F("Temperatura abaixo do ideal! "));
           Serial.println();
 
           digitalWrite(ledY, HIGH);
