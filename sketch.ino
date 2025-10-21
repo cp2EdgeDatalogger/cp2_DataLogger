@@ -8,7 +8,7 @@
 #define SERIAL_OPTION 1
 #define UTC_OFFSET -3
 
-#define DHT11_PIN 2
+#define DHT22_PIN 2
 #define DHTTYPE DHT22  // corrigido, pois você usa DHT22
 
 const int ledG = 3;
@@ -26,6 +26,7 @@ float mediaLdr = 0;
 float mediaTemp = 0;
 float mediaHumi = 0;
 
+//usando esquema de flags pra
 // flags
 bool flagTempAlta = false;
 bool flagTempBaixa = false;
@@ -40,7 +41,7 @@ LiquidCrystal_I2C lcd(0x27, 20, 4);
 RTC_DS1307 RTC;
 
 // DHT
-DHT dht11(DHT11_PIN, DHTTYPE);
+DHT dht22(DHT22_PIN, DHTTYPE);
 
 // Teclado 4x4 (pinos 13..6)
 const byte ROWS = 4;
@@ -77,7 +78,7 @@ void setup() {
   if (SERIAL_OPTION) Serial.begin(9600);
   Wire.begin();
   RTC.begin();
-  dht11.begin();
+  dht22.begin();
 
   lcd.init();
   lcd.backlight();
@@ -95,21 +96,31 @@ void setup() {
 
   mostrarMenuPrincipal();
 
-  // Banner ASCII otimizado pra flash
-  Serial.println(F(" __      ___       _          _      _                                  _ _       "));
-  Serial.println(F(" \\ \\    / (_)     | |        (_)    (_)           /\\                   | | |      "));
-  Serial.println(F("  \\ \\  / / _ _ __ | |__   ___ _ _ __ _  __ _     /  \\   __ _ _ __   ___| | | ___  "));
-  Serial.println(F("   \\ \\/ / | | '_ \\| '_ \\ / _ \\ | '__| |/ _` |   / /\\ \\ / _` | '_ \\ / _ \\ | |/ _ \\ "));
-  Serial.println(F("    \\  /  | | | | | | | |  __/ | |  | | (_| |  / ____ \\ (_| | | | |  __/ | | (_) |"));
-  Serial.println(F("     \\/   |_|_| |_|_| |_|\\___|_|_|  |_|\\__,_| /_/    \\_\\__, |_| |_|\\___|_|_|\\___/ "));
-  Serial.println(F("                                                        __/ |                     "));
-  Serial.println(F("                                                       |___/                      "));
   Serial.println(F("Iniciando gravacao de dados..."));
 }
 
 void loop() {
-  char tecla = teclado.getKey();
+  // --- Leitura dos sensores ---
+  float humi  = dht22.readHumidity();
+  float tempC = dht22.readTemperature();
+  int ldrValue = analogRead(ldrPin);
+  int lumPercent = map(ldrValue, 0, 1023, 100, 0);
+  lumPercent = constrain(lumPercent, 0, 100);
 
+  // --- Atualização das somas e cálculo das médias ---
+  
+    somaLdr += lumPercent;
+    somaTemp += tempC;
+    somaHumi += humi;
+    nloops++;
+
+    mediaLdr = somaLdr / nloops;
+    mediaTemp = somaTemp / nloops;
+    mediaHumi = somaHumi / nloops;
+  
+
+  // --- Leitura do teclado ---
+  char tecla = teclado.getKey();
   if (tecla) {
     digitalWrite(buzzer, HIGH);
     delay(80);
@@ -150,22 +161,14 @@ void loop() {
     if (agora - lastSensorMillis >= sensorInterval) {
       lastSensorMillis = agora;
 
-      float humi  = dht11.readHumidity();
-      float tempC = dht11.readTemperature();
-      int ldrValue = analogRead(ldrPin);
-      int lumPercent = map(ldrValue, 0, 1023, 100, 0);
-      lumPercent = constrain(lumPercent, 0, 100);
-
       lcd.setCursor(0,1);
-      if (isnan(humi) || isnan(tempC)) {
-        lcd.print(F("Erro no DHT      "));
-      } else {
+      
         lcd.print(F("T:"));
         lcd.print(tempC, 1);
         lcd.print(F("C U:"));
         lcd.print(humi, 0);
         lcd.print(F("% "));
-      }
+      
 
       lcd.setCursor(0,2);
       lcd.print(F("L:"));
@@ -174,7 +177,8 @@ void loop() {
       lcd.setCursor(0,3);
       lcd.print(F("4-Voltar"));
 
-      if (!isnan(humi) && !isnan(tempC)) {
+      // --- Análise de faixas e alertas ---
+      
         flagTempAlta = (tempC >= 30);
         flagTempBaixa = (tempC <= 0);
         flagUmidAlta = (humi >= 90);
@@ -205,6 +209,7 @@ void loop() {
           Serial.println();
 
           digitalWrite(ledY, HIGH);
+          tone(buzzer, 2000, 200);
           delay(100);
           digitalWrite(ledY, LOW);
         } else {
@@ -212,58 +217,39 @@ void loop() {
           delay(100);
           digitalWrite(ledG, LOW);
         }
-      }
+      
     }
   }
 
   // --- MODO MARCADOR ---
   else if (modoAtual == MARCADOR && tecla == '2') {
-    float humi  = dht11.readHumidity();
-    float tempC = dht11.readTemperature();
-    int ldrValue = analogRead(ldrPin);
-    int lumPercent = map(ldrValue, 0, 1023, 100, 0);
-    lumPercent = constrain(lumPercent, 0, 100);
 
-    if (!isnan(humi) && !isnan(tempC)) {
-      somaLdr += lumPercent;
-      somaHumi += humi;
-      somaTemp += tempC;
-      nloops++;
+      DateTime now = RTC.now();
+      DateTime adjustedTime = DateTime(now.unixtime() + (UTC_OFFSET * 3600));
 
-      if (nloops >= 10) {
-        mediaLdr = somaLdr / nloops;
-        mediaHumi = somaHumi / nloops;
-        mediaTemp = somaTemp / nloops;
+      Serial.println(F("=== MARCADOR SALVO ==="));
+      Serial.print(F("Data: "));
+      Serial.print(adjustedTime.day()); Serial.print('/');
+      Serial.print(adjustedTime.month()); Serial.print('/');
+      Serial.println(adjustedTime.year());
+      Serial.print(F("Hora: "));
+      Serial.print(adjustedTime.hour()); Serial.print(':');
+      Serial.print(adjustedTime.minute()); Serial.print(':');
+      Serial.println(adjustedTime.second());
+      Serial.print(F("T: ")); Serial.print(mediaTemp); Serial.println(F("C"));
+      Serial.print(F("U: ")); Serial.print(mediaHumi); Serial.println(F("%"));
+      Serial.print(F("L: ")); Serial.print(mediaLdr); Serial.println(F("%"));
+      Serial.println(F("======================="));
 
-        DateTime now = RTC.now();
-        DateTime adjustedTime = DateTime(now.unixtime() + (UTC_OFFSET * 3600));
+      lcd.setCursor(0, 2);
+      lcd.print(F("Marcador salvo!  "));
 
-        Serial.println(F("=== MARCADOR SALVO ==="));
-        Serial.print(F("Data: "));
-        Serial.print(adjustedTime.day()); Serial.print('/');
-        Serial.print(adjustedTime.month()); Serial.print('/');
-        Serial.println(adjustedTime.year());
-        Serial.print(F("Hora: "));
-        Serial.print(adjustedTime.hour()); Serial.print(':');
-        Serial.print(adjustedTime.minute()); Serial.print(':');
-        Serial.println(adjustedTime.second());
-        Serial.print(F("T: ")); Serial.print(mediaTemp); Serial.println(F("C"));
-        Serial.print(F("U: ")); Serial.print(mediaHumi); Serial.println(F("%"));
-        Serial.print(F("L: ")); Serial.print(mediaLdr); Serial.println(F("%"));
-        Serial.println(F("======================="));
-
-        lcd.setCursor(0, 2);
-        lcd.print(F("Marcador salvo!  "));
-
-        nloops = 0;
-        somaLdr = 0;
-        somaHumi = 0;
-        somaTemp = 0;
-      }
-    } else {
-      lcd.setCursor(0,2);
-      lcd.print(F("Erro na leitura! "));
-    }
+      // reseta acumuladores
+      nloops = 0;
+      somaLdr = 0;
+      somaHumi = 0;
+      somaTemp = 0;
+    
   }
 
   // --- MODO RELOGIO ---
