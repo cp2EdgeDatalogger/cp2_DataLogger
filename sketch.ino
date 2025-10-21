@@ -33,15 +33,16 @@ void setup() {
   if (SERIAL_OPTION) Serial.begin(9600);
 
   // Desenho do nome
-  Serial.println(" __      ___       _          _      _                                  _ _       ");
-  Serial.println(" \\ \\    / (_)     | |        (_)    (_)           /\\                   | | |      ");
-  Serial.println("  \\ \\  / / _ _ __ | |__   ___ _ _ __ _  __ _     /  \\   __ _ _ __   ___| | | ___  ");
-  Serial.println("   \\ \\/ / | | '_ \\| '_ \\ / _ \\ | '__| |/ _` |   / /\\ \\ / _` | '_ \\ / _ \\ | |/ _ \\ ");
-  Serial.println("    \\  /  | | | | | | | |  __/ | |  | | (_| |  / ____ \\ (_| | | | |  __/ | | (_) |");
-  Serial.println("     \\/   |_|_| |_|_| |_|\\___|_|_|  |_|\\__,_| /_/    \\_\\__, |_| |_|\\___|_|_|\\___/ ");
-  Serial.println("                                                        __/ |                     ");
-  Serial.println("                                                       |___/                      ");
-  Serial.println("Iniciando gravacao de dados...");
+Serial.println(F(" __      ___       _          _      _                                  _ _       "));
+Serial.println(F(" \\ \\    / (_)     | |        (_)    (_)           /\\                   | | |      "));
+Serial.println(F("  \\ \\  / / _ _ __ | |__   ___ _ _ __ _  __ _     /  \\   __ _ _ __   ___| | | ___  "));
+Serial.println(F("   \\ \\/ / | | '_ \\| '_ \\ / _ \\ | '__| |/ _` |   / /\\ \\ / _` | '_ \\ / _ \\ | |/ _ \\ "));
+Serial.println(F("    \\  /  | | | | | | | |  __/ | |  | | (_| |  / ____ \\ (_| | | | |  __/ | | (_) |"));
+Serial.println(F("     \\/   |_|_| |_|_| |_|\\___|_|_|  |_|\\__,_| /_/    \\_\\__, |_| |_|\\___|_|_|\\___/ "));
+Serial.println(F("                                                        __/ |                     "));
+Serial.println(F("                                                       |___/                      "));
+Serial.println(F("Iniciando gravacao de dados..."));
+
 
   Wire.begin();
   RTC.begin();
@@ -83,13 +84,12 @@ void loop() {
         if (mediaHumi <= 20 || mediaHumi >= 90 || lum >= 90 || mediaTemp >= 20 || mediaTemp <= 0) {
   Serial.print("[CRITICAL]: ");
   
-  if (mediaHumi <= 20) Serial.print("Umidade muito baixa!");
-  if (mediaHumi >= 90) Serial.print("Umidade muito alta! ");
-  if (lum >= 90) Serial.print("Luminosidade excessiva! ");
-  if (mediaTemp >= 20) Serial.print("Temperatura alta! ");
-  if (mediaTemp <= 0) Serial.print("Temperatura muito baixa! ");
-  
-  Serial.println();
+  if (mediaHumi <= 20) Serial.print(F("Umidade muito baixa! "));
+if (mediaHumi >= 90) Serial.print(F("Umidade muito alta! "));
+if (lum >= 90) Serial.print(F("Luminosidade excessiva! "));
+if (mediaTemp >= 20) Serial.print(F("Temperatura alta! "));
+if (mediaTemp <= 0) Serial.print(F("Temperatura muito baixa! "));
+Serial.println();// colocando junto pq tem chance do compilador deixar no mesmo buffer, ai dá cagada
   
   digitalWrite(ledR, HIGH);
   tone(buzzer, 5000);
@@ -100,12 +100,12 @@ void loop() {
 } else if (mediaHumi < 60 || mediaHumi > 80 || lum > 60 || mediaTemp > 16 || mediaTemp < 10) {
   Serial.print("warning: ");
 
-  if (mediaHumi < 60) Serial.print("Umidade um pouco baixa! ");
-  if (mediaHumi > 80) Serial.print("Umidade um pouco alta! ");
-  if (lum > 60) Serial.print("luminosidade acima do toleravel! ");
-  if (mediaTemp > 16) Serial.print("Temperatura acima do ideal! ");
-  if (mediaTemp < 10) Serial.print("Temperatura abaixo do ideal! ");
-  
+  if (mediaHumi < 60) Serial.print(F("Umidade um pouco baixa! "));
+  if (mediaHumi > 80) Serial.print(F("Umidade um pouco alta! "));
+  if (lum > 60) Serial.print(F("luminosidade acima do toleravel! "));
+  if (mediaTemp > 16) Serial.print(F("Temperatura acima do ideal! "));
+  if (mediaTemp < 10) Serial.print(F("Temperatura abaixo do ideal! "));
+
   Serial.println();
   
   digitalWrite(ledY, HIGH);

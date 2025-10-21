@@ -1,0 +1,150 @@
+{
+  "version": 1,
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-breadboard-mini",
+      "id": "bb1",
+      "top": 521.4,
+      "left": 17.75,
+      "attrs": { "color": "#575756" }
+    },
+    { "type": "wokwi-arduino-uno", "id": "uno1", "top": 465.8, "left": 221.15, "attrs": {} },
+    { "type": "wokwi-membrane-keypad", "id": "keypad1", "top": 60, "left": 236.95, "attrs": {} },
+    {
+      "type": "wokwi-lcd2004",
+      "id": "lcd1",
+      "top": 404.4,
+      "left": 611.35,
+      "attrs": { "pins": "i2c" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led1",
+      "top": 490.4,
+      "left": 14.35,
+      "attrs": { "color": "green" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 566,
+      "left": 10,
+      "rotate": 90,
+      "attrs": { "value": "330" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led2",
+      "top": 490.4,
+      "left": 52.75,
+      "attrs": { "color": "yellow" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r2",
+      "top": 566,
+      "left": 48.4,
+      "rotate": 90,
+      "attrs": { "value": "330" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led3",
+      "top": 490.4,
+      "left": 91.15,
+      "attrs": { "color": "red" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r3",
+      "top": 566,
+      "left": 86.8,
+      "rotate": 90,
+      "attrs": { "value": "330" }
+    },
+    {
+      "type": "wokwi-buzzer",
+      "id": "bz1",
+      "top": 448.4,
+      "left": 117.95,
+      "attrs": { "volume": "0.1" }
+    },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht1",
+      "top": 779.9,
+      "left": 429.35,
+      "rotate": 180,
+      "attrs": { "humidity": "100", "temperature": "80" }
+    },
+    {
+      "type": "wokwi-photoresistor-sensor",
+      "id": "ldr1",
+      "top": 836.5,
+      "left": 456.45,
+      "rotate": 270,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-ds1307",
+      "id": "rtc1",
+      "top": 789.1,
+      "left": 318.55,
+      "rotate": 90,
+      "attrs": {}
+    }
+  ],
+  "connections": [
+    [ "keypad1:R1", "uno1:13", "green", [ "v0" ] ],
+    [ "keypad1:R2", "uno1:12", "green", [ "v0" ] ],
+    [ "keypad1:R3", "uno1:11", "green", [ "v0" ] ],
+    [ "keypad1:R4", "uno1:10", "green", [ "v0" ] ],
+    [ "keypad1:C1", "uno1:9", "green", [ "v0" ] ],
+    [ "keypad1:C2", "uno1:8", "green", [ "v0" ] ],
+    [ "keypad1:C3", "uno1:7", "green", [ "v0" ] ],
+    [ "keypad1:C4", "uno1:6", "green", [ "v0" ] ],
+    [ "lcd1:GND", "uno1:GND.1", "black", [ "h0" ] ],
+    [ "lcd1:SDA", "uno1:A4.2", "purple", [ "h0" ] ],
+    [ "lcd1:SCL", "uno1:A5.2", "cyan", [ "h0" ] ],
+    [ "bb1:1t.d", "bb1:1t.b", "black", [ "v0" ] ],
+    [ "bb1:5t.b", "bb1:5t.d", "black", [ "v0" ] ],
+    [ "bb1:9t.b", "bb1:9t.d", "black", [ "v0" ] ],
+    [ "bb1:2b.g", "uno1:3", "green", [ "v76.8", "h518.4", "v-268.8", "h-109.6" ] ],
+    [ "bb1:6b.g", "uno1:4", "yellow", [ "v86.4", "h432", "v-268.8", "h-71.1" ] ],
+    [ "uno1:GND.2", "bb1:1t.d", "black", [ "v19.1", "h-380.1", "v-115.2", "h19.2" ] ],
+    [ "bb1:14t.b", "uno1:A1", "gray", [ "v163.2", "h288" ] ],
+    [ "bb1:10b.g", "uno1:5", "orange", [ "v105.6", "h422.4", "v-307.2", "h-109.4" ] ],
+    [ "rtc1:GND", "uno1:GND.3", "black", [ "v0" ] ],
+    [ "uno1:5V", "bb1:17b.j", "red", [ "v67.1", "h-197.8" ] ],
+    [ "rtc1:SDA", "uno1:A4", "cyan", [ "v-86.4", "h86.7" ] ],
+    [ "rtc1:SCL", "uno1:A5", "magenta", [ "v-57.6", "h115.4" ] ],
+    [ "dht1:SDA", "uno1:2", "purple", [ "v-38.4", "h57.5", "v-268.8", "h-61.7" ] ],
+    [ "ldr1:AO", "uno1:A0", "green", [ "v-57.6", "h-129.3" ] ],
+    [ "ldr1:GND", "bb1:17t.d", "black", [ "v-19.2", "h-336.4", "v-201.6" ] ],
+    [ "dht1:GND", "bb1:1t.e", "black", [ "v-96", "h-441.6", "v-115.2" ] ],
+    [ "bb1:17t.e", "bb1:1t.e", "green", [ "v0" ] ],
+    [ "bb1:5t.d", "bb1:1t.e", "green", [ "v0" ] ],
+    [ "bb1:9t.d", "bb1:1t.e", "green", [ "v0" ] ],
+    [ "rtc1:5V", "bb1:17b.i", "red", [ "v-9.6", "h-182", "v-153.6" ] ],
+    [ "ldr1:VCC", "bb1:17b.h", "red", [ "v-28.8", "h-316.8", "v-134.4" ] ],
+    [ "dht1:VCC", "bb1:17b.g", "red", [ "v-38.4", "h-249.6", "v-134.4", "h-38.4" ] ],
+    [ "lcd1:VCC", "bb1:17b.f", "red", [ "h-67.2", "v288.1", "h-316.8", "v-134.4", "h-9.6" ] ],
+    [ "bb1:13t.b", "bb1:1t.e", "green", [ "v0" ] ],
+    [ "led1:A", "bb1:2t.a", "", [ "$bb" ] ],
+    [ "led1:C", "bb1:1t.a", "", [ "$bb" ] ],
+    [ "r1:1", "bb1:2t.b", "", [ "$bb" ] ],
+    [ "r1:2", "bb1:2b.f", "", [ "$bb" ] ],
+    [ "led2:A", "bb1:6t.a", "", [ "$bb" ] ],
+    [ "led2:C", "bb1:5t.a", "", [ "$bb" ] ],
+    [ "r2:1", "bb1:6t.b", "", [ "$bb" ] ],
+    [ "r2:2", "bb1:6b.f", "", [ "$bb" ] ],
+    [ "led3:A", "bb1:10t.a", "", [ "$bb" ] ],
+    [ "led3:C", "bb1:9t.a", "", [ "$bb" ] ],
+    [ "r3:1", "bb1:10t.b", "", [ "$bb" ] ],
+    [ "r3:2", "bb1:10b.f", "", [ "$bb" ] ],
+    [ "bz1:1", "bb1:13t.a", "", [ "$bb" ] ],
+    [ "bz1:2", "bb1:14t.a", "", [ "$bb" ] ]
+  ],
+  "dependencies": {}
+}
