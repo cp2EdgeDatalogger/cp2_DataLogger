@@ -1,4 +1,4 @@
 [wokwi]
 version = 1
-firmware = "sketch_oct21b.ino.hex"
+firmware = "sketch7.ino.hex"
 elf = "sketch_oct21a.ino.elf"
