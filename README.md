@@ -93,3 +93,12 @@ A EEPROM armazena até **100 registros**, que podem ser visualizados diretamente
 ```bash
 git clone https://github.com/FelipeMenezes937/arduino-env-monitor.git
 ```
+---
+## 👥 Integrantes do Projeto
+
+| Nome Completo                  | Função         |
+|--------------------------------|----------------|
+| Felipe Silva Santos Menezes    | Desenvolvedor  |
+| Gabriel Ardito Manes           | Desenvolvedor  |
+| João Pedro Gonzales            | Desenvolvedor  |
+| João Antonio Sarracine         | Desenvolvedor  |
