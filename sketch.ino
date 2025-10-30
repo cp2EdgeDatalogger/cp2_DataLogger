@@ -281,7 +281,7 @@ if (nloops >= 10) {
         EEPROM.put(currentAddress, epoch);
         EEPROM.put(currentAddress + 4, (int)tempC);
         EEPROM.put(currentAddress + 6, (byte)humi);
-        EEPROM.put(currentAddress + 7, lumPercent);
+        EEPROM.put(currentAddress + 7, (byte)lumPercent);
         getNextAddress();
 
         digitalWrite(ledR, HIGH);
