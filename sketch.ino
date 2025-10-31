@@ -182,7 +182,6 @@ void get_log() {
     unsigned long timeStamp;
     int tempC;
     byte humi, lumPercent;
- 
     // LER DADOS DA EEPROM
     EEPROM.get(address, timeStamp);
     EEPROM.get(address + 4, tempC);
@@ -199,9 +198,21 @@ void get_log() {
       Serial.print("%\t");
       Serial.print(lumPercent);
       Serial.println("%");
+      for (int i = 0; i < 20; i++) {
+  if (teclado.getKey() == '*') {
+    lcd.clear();
+    modoAtual = MENU_PRINCIPAL;
+    mostrarMenuPrincipal();
+    return; // sai da função imediatamente
+  }
+
+}
+  }                           
+
     }
   }
 
+ 
 // ======================= SETUP =========================
  
 void setup() {
@@ -477,8 +488,17 @@ if (nloops >= 10) {
         lcd.print(F("%"));
  
         lcd.setCursor(0, 3);
-        lcd.print(F("* - Voltar"));
+        lcd.print(F("* - Voltar(long Click)"));
         marcador +=1;
+        for (int i = 0; i < 5; i++) {
+  if (teclado.getKey() == '*') {
+    lcd.clear();
+    modoAtual = MENU_PRINCIPAL;
+    mostrarMenuPrincipal();
+    return; // sai da função imediatamente
+  }
+  delay(50);
+}
         delay(2000); // Mostra cada registro por 2 segundos
       }
     }
