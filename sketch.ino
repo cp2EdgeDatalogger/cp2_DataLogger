@@ -41,6 +41,10 @@ bool flagTempBaixa = false;
 bool flagUmidAlta = false;
 bool flagUmidBaixa = false;
 bool flagLumAlta = false;
+
+// === DESENHO DAS LINHAS SUPERIOR E INFERIOR DO TEXTO ===
+const byte upperRow[8] = {0, 2, 4, 6, 0, 2, 4, 6}; // A P A P (superior)
+const byte lowerRow[8] = {1, 3, 5, 7, 1, 3, 5, 7}; // A P A P (inferior)
  
 // Letra "A" - canto superior esquerdo
 byte A_topleft[8] = {
@@ -148,35 +152,7 @@ void mostrarMenuPrincipal() {
   lcd.setCursor(0, 3);
   lcd.print(F("C - Relogio"));
 }
- 
-// ==================== FUNÇÃO PARA DESENHAR TEXTO ====================
-void desenhaTexto(int pos) {
-  lcd.clear();
- 
-  // Linha superior (linha 0)
-  lcd.setCursor(pos, 1);
-  lcd.write(byte(0)); // A canto sup. esq
-  lcd.write(byte(2)); // A canto sup. dir
-  lcd.write(byte(4)); // P canto sup. esq
-  lcd.write(byte(6)); // P canto sup. dir
-  lcd.write(byte(0)); // A canto sup. esq (segunda letra A)
-  lcd.write(byte(2)); // A canto sup. dir
-  lcd.write(byte(4)); // P canto sup. esq (segunda letra P)
-  lcd.write(byte(6)); // P canto sup. dir
- 
-  // Linha inferior (linha 1)
-  lcd.setCursor(pos, 2);
-  lcd.write(byte(1)); // A canto inf. esq
-  lcd.write(byte(3)); // A canto inf. dir
-  lcd.write(byte(5)); // P canto inf. esq
-  lcd.write(byte(7)); // P canto inf. dir
-  lcd.write(byte(1)); // A canto inf. esq (segunda letra A)
-  lcd.write(byte(3)); // A canto inf. dir
-  lcd.write(byte(5)); // P canto inf. esq (segunda letra P)
-  lcd.write(byte(7)); // P canto inf. dir
-}
- 
- 
+
 void get_log() {
   for (int address = startAddress; address < endAddress; address += recordSize) {
     unsigned long timeStamp;
@@ -212,7 +188,54 @@ void get_log() {
     }
   }
 
- 
+  void verificaTecla(char tecla){
+    if (tecla != 'A' && tecla != 'B' && tecla != 'C' && tecla != 'D' && tecla != '#' && tecla != '*') {
+      lcd.clear();
+      lcd.setCursor(0, 0);
+      lcd.print(F("Opcao invalida"));
+     
+      delay(500);
+      modoAtual = MENU_PRINCIPAL;
+      mostrarMenuPrincipal();  // opcional, volta pro menu
+    }
+  }
+// ==================== FUNÇÃO PARA DESENHAR TEXTO ====================
+// === FUNÇÃO DE ANIMAÇÃO ===
+void animarAPAP() {
+  int larguraTexto = 8; // 8 colunas (2 por letra x 4 letras)
+  int larguraLCD = 20;
+
+  for (int pos = larguraLCD; pos >= -larguraTexto; pos--) {
+    // Limpa apenas as linhas 1 e 2 (onde o texto aparece)
+    clearLine(1);
+    clearLine(2);
+
+    int startIndex = max(0, -pos);
+    int startCol = max(0, pos);
+    int drawCols = min(larguraTexto - startIndex, larguraLCD - startCol);
+
+    // Linha superior
+    lcd.setCursor(startCol, 1);
+    for (int i = 0; i < drawCols; i++) {
+      lcd.write(upperRow[startIndex + i]);
+    }
+
+    // Linha inferior
+    lcd.setCursor(startCol, 2);
+    for (int i = 0; i < drawCols; i++) {
+      lcd.write(lowerRow[startIndex + i]);
+    }
+
+    delay(150);
+  }
+}
+
+// === FUNÇÃO PARA LIMPAR APENAS UMA LINHA ===
+void clearLine(int line) {
+  lcd.setCursor(0, line);
+  lcd.print("                    "); // 20 espaços
+}
+
 // ======================= SETUP =========================
  
 void setup() {
@@ -229,7 +252,7 @@ void setup() {
  
   lcd.begin(20, 4);  // Inicia o LCD 20x4 com I2C
  
-  // Registra os 8 caracteres customizados
+  // Cria os caracteres personalizados
   lcd.createChar(0, A_topleft);
   lcd.createChar(1, A_botleft);
   lcd.createChar(2, A_topright);
@@ -238,15 +261,10 @@ void setup() {
   lcd.createChar(5, P_botleft);
   lcd.createChar(6, P_topright);
   lcd.createChar(7, P_botright);
- 
-  // ==================== ANIMAÇÃO INICIAL ====================
-  // O texto começa fora da tela (coluna 20) e vai andando até sair pela esquerda (-8).
-  for (int pos = 12; pos >= 0; pos--) {
-    lcd.setCursor(pos,2);
-    desenhaTexto(pos);  // Desenha as letras na posição
-    delay(250);         // Controla a velocidade do movimento
-  }
- 
+
+  // Executa animação uma vez
+  animarAPAP();
+
   delay(1500); // Pausa no final da animação
   lcd.clear(); // Limpa o LCD após a animação
  
@@ -267,6 +285,7 @@ void setup() {
 // ======================= LOOP =========================
  
 void loop() {
+  
   DateTime now = RTC.now();
   unsigned long epoch = now.unixtime() + (UTC_OFFSET * 3600);
   DateTime adjustedTime = DateTime(epoch);
@@ -298,6 +317,7 @@ if (nloops >= 10) {
 }
   char tecla = teclado.getKey();
   if (tecla) {
+    verificaTecla(tecla);
     digitalWrite(buzzer, HIGH);
     delay(80);
     digitalWrite(buzzer, LOW);
@@ -306,8 +326,9 @@ if (nloops >= 10) {
   if (tecla == 'A') {
     modoAtual = ESTATISTICAS;
     lcd.clear();
-    lcd.setCursor(0, 0);
+    lcd.setCursor(1, 0);
     lcd.print(F("ESTATISTICAS:"));
+    delay(200);
   }
   else if (tecla == 'B') {
     modoAtual = MARCADOR;
@@ -357,21 +378,24 @@ if (nloops >= 10) {
     if (agora - lastSensorMillis >= sensorInterval) {
       lastSensorMillis = agora;
  
-      lcd.setCursor(0,1);
-      lcd.print(F("T:"));
-      lcd.print((mediaTemp / 100.0), 1);
-      lcd.print(F("C"));
-      lcd.setCursor(0,3);
-      lcd.print(F("U:"));
-      lcd.print((mediaHumi / 100.0), 1);
-      lcd.print(F("% "));
-      lcd.setCursor(0,2);
-      lcd.print(F("L:"));
-      lcd.print((int)mediaLdr, DEC);
-      lcd.print(F("%         "));
-      lcd.setCursor(12,3);
-      lcd.print(F("*-Voltar"));
- 
+      lcd.setCursor(0, 0);
+lcd.print(F("ESTATISTICAS     ")); // limpa o topo
+
+lcd.setCursor(0, 1);
+lcd.print(F("T:"));
+lcd.print((mediaTemp / 100.0), 1);
+lcd.print(F("C   "));  // espaços extras limpam resto da linha
+
+lcd.setCursor(0, 2);
+lcd.print(F("L:"));
+lcd.print((int)mediaLdr);
+lcd.print(F("%   "));
+
+lcd.setCursor(0, 3);
+lcd.print(F("U:"));
+lcd.print((mediaHumi / 100.0), 1);
+lcd.print(F("%  *-Voltar   "));
+
       // --- ALERTAS ---
       flagTempAlta = (tempC >= 30);
       flagTempBaixa = (tempC <= 0);
@@ -488,7 +512,7 @@ if (nloops >= 10) {
         lcd.print(F("%"));
  
         lcd.setCursor(0, 3);
-        lcd.print(F("* - Voltar(long Click)"));
+        lcd.print(F("segure * p/ voltar"));
         marcador +=1;
         for (int i = 0; i < 5; i++) {
   if (teclado.getKey() == '*') {
