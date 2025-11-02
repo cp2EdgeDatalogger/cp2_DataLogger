@@ -51,7 +51,7 @@ O software identifica condições de alerta e, quando necessário, **registra au
    - `B` → Marcadores e Logs (visualiza registros salvos)  
    - `C` → Relógio (exibe data e hora atual)  
    - `#` → Limpar EEPROM  
-   - `5` → Voltar ao menu principal  
+   - `*` → Voltar ao menu principal  
 
 ---
 
