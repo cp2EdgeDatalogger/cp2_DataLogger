@@ -88,6 +88,50 @@ byte P_botright[8] = {
   B00000, B00000, B00000, B00000
 };
  
+const char fogo[8] PROGMEM = {
+  0b01001, 0b10100, 0b00010, 0b10100,
+  0b00110, 0b10111, 0b11111, 0b11111
+};
+const char gelo[8] PROGMEM = {
+  0b00100, 0b01010, 0b10101, 0b01110,
+  0b10101, 0b01010, 0b00100, 0b00000
+};
+const char gotaMeia[8] PROGMEM = {
+  0b00100, 0b01010, 0b10001, 0b10111,
+  0b11111, 0b11111, 0b01110, 0b00000
+};
+const char gotaVazia[8] PROGMEM = {
+  0b00100, 0b01010, 0b10001, 0b10001,
+  0b10001, 0b10001, 0b01110, 0b00000
+};
+const char gotaCheia[8] PROGMEM = {
+  0b00100, 0b01110, 0b11111, 0b11111,
+  0b11111, 0b11111, 0b01110, 0b00000
+};
+const char sol[8] PROGMEM = {
+  0b00100, 0b10101, 0b01110, 0b11111,
+  0b01110, 0b10101, 0b00100, 0b00000
+};
+const char porSol[8] PROGMEM = {
+  0b10001, 0b00010, 0b10100, 0b11000,
+  0b11101, 0b11010, 0b11000, 0b00100
+};
+const char lua[8] PROGMEM = {
+  0b00110, 0b11111, 0b10011, 0b00001,
+  0b00001, 0b10011, 0b11111, 0b01110
+};
+const char arquivoEsq[8] PROGMEM = {
+  0b01111, 0b01010, 0b01011, 0b01000, 
+  0b01011, 0b01010, 0b01010, 0b01111
+};
+
+const char arquivoDir[8] PROGMEM = {
+  0b11100, 0b00110, 0b11101, 0b00001,
+  0b11101, 0b00101, 0b00101, 0b11111
+};
+
+
+
  
 // LCD 20x4 no endereço 0x27
 LiquidCrystal_I2C lcd(0x27, 20, 4);
@@ -118,7 +162,29 @@ enum Modo { MENU_PRINCIPAL, ESTATISTICAS, MARCADOR, RELOGIO, MARCADORES };
 Modo modoAtual = MENU_PRINCIPAL;
  
 // ======================= FUNÇÕES =========================
- 
+
+
+void loadGlyphFromProgmem(byte slot, const char* glyphPROGMEM) {
+    byte buffer[8];
+    memcpy_P(buffer, glyphPROGMEM, 8);
+    lcd.createChar(slot, buffer);
+}
+
+void carregarIconesMarcadores() {
+    loadGlyphFromProgmem(6, arquivoEsq);
+    loadGlyphFromProgmem(7, arquivoDir);
+}
+
+void carregarIconesEstatisticas() {
+  loadGlyphFromProgmem(0, fogo);
+  loadGlyphFromProgmem(1, gelo);
+  loadGlyphFromProgmem(2, gotaCheia);
+  loadGlyphFromProgmem(3, gotaVazia);
+  loadGlyphFromProgmem(6, gotaMeia);
+  loadGlyphFromProgmem(4, sol);
+  loadGlyphFromProgmem(7, porSol);
+  loadGlyphFromProgmem(5, lua);
+}
 void getNextAddress() {
   currentAddress += recordSize;
   if (currentAddress >= endAddress) {
@@ -230,13 +296,12 @@ void animarAPAP() {
   }
 }
 
-// === FUNÇÃO PARA LIMPAR APENAS UMA LINHA ===
+
 void clearLine(int line) {
   lcd.setCursor(0, line);
   lcd.print("                    "); // 20 espaços
 }
 
-// ======================= SETUP =========================
  
 void setup() {
   if (SERIAL_OPTION) Serial.begin(9600);
@@ -375,26 +440,57 @@ if (nloops >= 10) {
  
   // --- MODO ESTATISTICAS ---
   if (modoAtual == ESTATISTICAS) {
+    carregarIconesEstatisticas();
     if (agora - lastSensorMillis >= sensorInterval) {
       lastSensorMillis = agora;
- 
+      
       lcd.setCursor(0, 0);
 lcd.print(F("ESTATISTICAS     ")); // limpa o topo
 
-lcd.setCursor(0, 1);
+//lcd.setCursor(0, 1);
+//lcd.print(F("T:"));
+//lcd.print((mediaTemp / 100.0), 1);
+//lcd.print(F("C   "));  // espaços extras limpam resto da linha
+
+
+lcd.setCursor(0,1);
 lcd.print(F("T:"));
 lcd.print((mediaTemp / 100.0), 1);
-lcd.print(F("C   "));  // espaços extras limpam resto da linha
+lcd.print(F("C "));
+lcd.setCursor(9,1);
+if ((mediaTemp / 100.0) > 20) lcd.write((byte)0);  // 🔥
+else lcd.write((byte)1);       // ❄️
 
-lcd.setCursor(0, 2);
-lcd.print(F("L:"));
-lcd.print((int)mediaLdr);
-lcd.print(F("%   "));
 
-lcd.setCursor(0, 3);
-lcd.print(F("U:"));
-lcd.print((mediaHumi / 100.0), 1);
-lcd.print(F("%  *-Voltar   "));
+//lcd.setCursor(0, 2);
+//lcd.print(F("L:"));
+//lcd.print((int)mediaLdr);
+//lcd.print(F("%   "));
+
+      lcd.setCursor(0,2);
+      lcd.print(F("U:"));
+      lcd.print((mediaHumi / 100.0), 1);
+      lcd.print(F("% "));
+      lcd.setCursor(8,2);
+      if ((mediaHumi / 100.0) > 75) lcd.write((byte)2);  // gota cheia
+      else if ((mediaHumi / 100.0) > 50 && (mediaHumi / 100.0) <= 75) lcd.write((byte)6); // gota media
+      else lcd.write((byte)3);                            // gota vazia   
+
+//lcd.setCursor(0, 3);
+//lcd.print(F("U:"));
+//lcd.print((mediaHumi / 100.0), 1);
+//lcd.print(F("%  *-Voltar   "));
+
+
+      lcd.setCursor(0,3);
+      lcd.print(F("L:"));
+      lcd.print((int)mediaLdr);
+      lcd.print(F("% "));
+      lcd.setCursor(7,3);
+      if ((int)mediaLdr > 75 ) lcd.write((byte)4);         // sol
+      else if ((int)mediaLdr > 50 && (int)mediaLdr <= 75) lcd.write((byte)7);
+      else lcd.write((byte)5);
+
 
       // --- ALERTAS ---
       flagTempAlta = (tempC >= 30);
