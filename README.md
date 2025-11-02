@@ -94,7 +94,7 @@ A EEPROM armazena até **100 registros**, que podem ser visualizados diretamente
 git clone https://github.com/FelipeMenezes937/arduino-env-monitor.git
 ```
 
-### 1. Simular no Wokwi
+### 2. Simular no Wokwi
 
 [Projeto no Wokwi](https://wokwi.com/projects/445423567875087361)
 
