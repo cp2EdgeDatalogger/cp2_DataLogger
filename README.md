@@ -1,12 +1,12 @@
-# 🌡️ Sistema de Monitoramento Ambiental com EEPROM e RTC – Edge Computing
+# Sistema de Monitoramento Ambiental com EEPROM e RTC – Edge Computing
 
-## 📘 Contexto Acadêmico
+## Contexto Acadêmico
 Este projeto foi desenvolvido no contexto da disciplina de **Edge Computing**, com o objetivo de criar um sistema embarcado capaz de **coletar, processar e registrar dados ambientais** diretamente no microcontrolador.  
 A proposta reflete os princípios da computação de borda — **analisar dados localmente, reduzir dependência de nuvem** e otimizar o tempo de resposta em aplicações IoT.
 
 ---
 
-## 🏭 Contexto de Aplicação – Vinheria Agnello
+## Contexto de Aplicação – Vinheria Agnello
 Inspirado no ambiente da **Vinheria Agnello**, o projeto simula um sistema de monitoramento inteligente que observa **temperatura, umidade e luminosidade** do espaço de armazenamento dos vinhos.  
 O controle preciso dessas variáveis é essencial para preservar aroma, sabor e qualidade, mantendo a tradição da vinheria agora apoiada pela tecnologia da **APAP Systems**.
 
@@ -15,20 +15,20 @@ O controle preciso dessas variáveis é essencial para preservar aroma, sabor e 
 ## 🔎 Sobre o Projeto
 O sistema foi desenvolvido em **C++ para Arduino UNO**, e reúne múltiplos sensores e periféricos integrados:
 
-- 🌡️ **DHT22** — sensor de temperatura e umidade.  
-- 💡 **LDR (fotoresistor)** — capta a intensidade luminosa.  
-- 💾 **EEPROM interna** — armazena logs críticos de operação com data e hora.  
-- ⏰ **RTC DS1307** — mantém registro temporal mesmo sem alimentação.  
-- 🔢 **Keypad 4x4** — permite navegação entre menus e funções.  
-- 📺 **Display LCD 20x4 (I²C)** — exibe informações em tempo real e menus interativos.  
-- 🔴🟡🟢 **LEDs** — indicam status ambiental (seguro, atenção, crítico).  
-- 🔔 **Buzzer** — emite alertas sonoros proporcionais ao nível de risco.  
+- **DHT22** — sensor de temperatura e umidade.  
+- **LDR (fotoresistor)** — capta a intensidade luminosa.  
+- **EEPROM interna** — armazena logs críticos de operação com data e hora.  
+- **RTC DS1307** — mantém registro temporal mesmo sem alimentação.  
+- **Keypad 4x4** — permite navegação entre menus e funções.  
+- **Display LCD 20x4 (I²C)** — exibe informações em tempo real e menus interativos.  
+- **LEDs** — indicam status ambiental (seguro, atenção, crítico).  
+- **Buzzer** — emite alertas sonoros proporcionais ao nível de risco.  
 
 O software identifica condições de alerta e, quando necessário, **registra automaticamente o evento na EEPROM**, com timestamp do RTC — funcionando como um **data logger autônomo em Edge Computing**.
 
 ---
 
-## ⚙️ Funcionamento Geral
+## Funcionamento Geral
 
 1. O sistema lê periodicamente:
    - Temperatura (°C)
@@ -55,7 +55,7 @@ O software identifica condições de alerta e, quando necessário, **registra au
 
 ---
 
-## 💾 Estrutura de Registro na EEPROM
+## Estrutura de Registro na EEPROM
 Cada evento ocupa **8 bytes**
 Os campos são gravados na seguinte sequência:
 
@@ -70,7 +70,7 @@ A EEPROM armazena até **100 registros**, que podem ser visualizados diretamente
 
 ---
 
-## 🛠️ Componentes Utilizados
+## Componentes Utilizados
 
 | Quantidade | Componente | Função |
 |-------------|-------------|--------|
@@ -99,7 +99,7 @@ git clone https://github.com/FelipeMenezes937/arduino-env-monitor.git
 [Projeto no Wokwi](https://wokwi.com/projects/445423567875087361)
 
 ---
-## 👥 Integrantes do Projeto
+## Integrantes do Projeto
 
 | Nome Completo                  | Função         |
 |--------------------------------|----------------|
