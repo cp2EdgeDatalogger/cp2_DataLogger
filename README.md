@@ -56,7 +56,7 @@ O software identifica condições de alerta e, quando necessário, **registra au
 ---
 
 ## 💾 Estrutura de Registro na EEPROM
-Cada evento ocupa **8 bytes** (caso `lumPercent` seja `byte`) ou **9 bytes** (se for `int`).  
+Cada evento ocupa **8 bytes**
 Os campos são gravados na seguinte sequência:
 
 | Campo         | Tipo           | Bytes | Descrição |
