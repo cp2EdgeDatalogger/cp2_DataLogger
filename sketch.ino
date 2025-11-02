@@ -486,7 +486,8 @@ else lcd.write((byte)1);
       if ((int)mediaLdr > 75 ) lcd.write((byte)4);         // sol
       else if ((int)mediaLdr > 50 && (int)mediaLdr <= 75) lcd.write((byte)7);
       else lcd.write((byte)5);
-
+      lcd.setCursor(9,3);
+      lcd.print("* p/ voltar");
 
       // --- ALERTAS ---
       flagTempAlta = (tempC >= 30);
