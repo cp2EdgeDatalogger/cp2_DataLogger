@@ -15,7 +15,7 @@ int oldAddress = 0;
  
 #define LOG_OPTION 1
 #define SERIAL_OPTION 1
-#define UTC_OFFSET -3
+#define UTC_OFFSET 0
  
 #define DHT22_PIN 2
 #define DHTTYPE DHT22
@@ -165,14 +165,9 @@ Modo modoAtual = MENU_PRINCIPAL;
 
 
 void loadGlyphFromProgmem(byte slot, const char* glyphPROGMEM) {
-    byte buffer[8];
-    memcpy_P(buffer, glyphPROGMEM, 8);
-    lcd.createChar(slot, buffer);
-}
-
-void carregarIconesMarcadores() {
-    loadGlyphFromProgmem(6, arquivoEsq);
-    loadGlyphFromProgmem(7, arquivoDir);
+  byte buffer[8];
+  memcpy_P(buffer, glyphPROGMEM, 8);
+  lcd.createChar(slot, buffer);
 }
 
 void carregarIconesEstatisticas() {
@@ -396,6 +391,7 @@ if (nloops >= 10) {
     delay(200);
   }
   else if (tecla == 'B') {
+   
     modoAtual = MARCADOR;
     lcd.clear();
     lcd.setCursor(0,0);
@@ -458,8 +454,8 @@ lcd.print(F("T:"));
 lcd.print((mediaTemp / 100.0), 1);
 lcd.print(F("C "));
 lcd.setCursor(9,1);
-if ((mediaTemp / 100.0) > 20) lcd.write((byte)0);  // 🔥
-else lcd.write((byte)1);       // ❄️
+if ((mediaTemp / 100.0) > 20) lcd.write((byte)0);  
+else lcd.write((byte)1);       
 
 
 //lcd.setCursor(0, 2);
@@ -615,11 +611,11 @@ else lcd.write((byte)1);       // ❄️
     lcd.clear();
     modoAtual = MENU_PRINCIPAL;
     mostrarMenuPrincipal();
-    return; // sai da função imediatamente
+    return;
   }
   delay(50);
 }
-        delay(2000); // Mostra cada registro por 2 segundos
+        delay(2000);
       }
     }
  
