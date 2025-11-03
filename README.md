@@ -25,6 +25,10 @@ O sistema foi desenvolvido em **C++ para Arduino UNO**, e reúne múltiplos sens
 - **Buzzer** — emite alertas sonoros proporcionais ao nível de risco.  
 
 O software identifica condições de alerta e, quando necessário, **registra automaticamente o evento na EEPROM**, com timestamp do RTC — funcionando como um **data logger autônomo em Edge Computing**.
+---
+## Visão Geral do Circuito
+
+<img width="791" height="700" alt="image" src="https://github.com/user-attachments/assets/8d398959-0dc9-442c-818d-327a01b9e326" />
 
 ---
 
